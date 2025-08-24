@@ -120,7 +120,6 @@ module Raylib.Types.Core
   )
 where
 
-import Data.Ix
 import Foreign
   ( FunPtr,
     Ptr,
@@ -142,6 +141,7 @@ import Foreign.C
     newCString,
     peekCString,
   )
+import GHC.Ix
 import Raylib.Internal (Closeable(..), _unloadAutomationEventList, addAutomationEventList)
 import Raylib.Internal.Foreign (Freeable (rlFreeDependents), c'free, peekStaticArray, pokeStaticArray)
 
@@ -557,24 +557,13 @@ instance Enum KeyboardKey where
     x -> error $ "(KeyboardKey.toEnum) Invalid value: " ++ show x
 
 instance Ix KeyboardKey where
-  range (l, u) =
-    KeyNull
-      : [KeyVolumeUp, KeyVolumeDown]
-      ++ KeySpace
-      : [KeyBack, KeyMenu]
-      ++ KeyApostrophe
-      : [KeyComma .. KeyNine]
-      ++ KeySemicolon
-      : KeyEqual
-      : [KeyA .. KeyRightBracket]
-      ++ KeyGrave
-      : [KeyEscape .. KeyEnd]
-      ++ [KeyCapsLock .. KeyPause]
-      ++ [KeyF1 .. KeyF12]
-      ++ [KeyKp0 .. KeyKpEqual]
-      ++ [KeyLeftShift .. KeyKbMenu]
-  index (l, u) i = fromEnum i
-  inRange (l, u) i = True
+  range (l, u) = [l .. u]
+  index b i
+    | inRange b i = unsafeIndex b i
+    | otherwise =
+        indexError b i "KeyboardKey"
+  unsafeIndex (l, _) i = fromEnum i - fromEnum l
+  inRange b i = i `elem` range b
 
 instance Ord KeyboardKey where
   compare x y = compare (fromEnum x) $ fromEnum y
