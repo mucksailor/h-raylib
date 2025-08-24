@@ -120,6 +120,7 @@ module Raylib.Types.Core
   )
 where
 
+import Data.Ix
 import Foreign
   ( FunPtr,
     Ptr,
