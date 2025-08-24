@@ -555,6 +555,29 @@ instance Enum KeyboardKey where
     25 -> KeyVolumeDown
     x -> error $ "(KeyboardKey.toEnum) Invalid value: " ++ show x
 
+instance Ix KeyboardKey where
+  range (l, u) =
+    KeyNull
+      : [KeyVolumeUp, KeyVolumeDown]
+      ++ KeySpace
+      : [KeyBack, KeyMenu]
+      ++ KeyApostrophe
+      : [KeyComma .. KeyNine]
+      ++ KeySemicolon
+      : KeyEqual
+      : [KeyA .. KeyRightBracket]
+      ++ KeyGrave
+      : [KeyEscape .. KeyEnd]
+      ++ [KeyCapsLock .. KeyPause]
+      ++ [KeyF1 .. KeyF12]
+      ++ [KeyKp0 .. KeyKpEqual]
+      ++ [KeyLeftShift .. KeyKbMenu]
+  index (l, u) i = fromEnum i
+  inRange (l, u) i = True
+
+instance Ord KeyboardKey where
+  compare x y = compare (fromEnum x) $ fromEnum y
+
 data MouseButton
   = MouseButtonLeft
   | MouseButtonRight
